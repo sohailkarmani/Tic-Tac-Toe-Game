@@ -2,14 +2,31 @@ package TicTacToe;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
 
-public class Game extends JFrame {
+public class Game extends JFrame implements ActionListener {
 
     private JLabel heading, status;
     private JButton[] buttons = new JButton[9];
     private JPanel buttonContainer;
     private Font fontHeading = new Font("", Font.BOLD, 20);
 
+    // for game logic
+    boolean isWinner=false;
+    int currentPlayer=0;
+    int[] gameState ={-1,-1,-1,-1,-1,-1,-1,-1,-1};
+    int[][] winingConditions ={
+            {0,1,2},
+            {3,4,5},
+            {6,7,8},
+            {0,3,6},
+            {1,4,7},
+            {2,5,8},
+            {0,4,8},
+            {2,4,6}
+    };
     // Constructor
     Game(String title) {
         setTitle(title);
@@ -26,15 +43,6 @@ public class Game extends JFrame {
         setVisible(true);
     }
 
-    private void startGame() {
-        // Ensure status is initialized before using it
-        if (status != null) {
-            status.setText("Player 1 Chance");
-        } else {
-            System.err.println("Error: Status JLabel is not initialized.");
-        }
-    }
-
     private void createComponent() {
         // Initialize heading
         heading = new JLabel("Tic Tac Toe");
@@ -47,6 +55,8 @@ public class Game extends JFrame {
             buttons[i] = new JButton();
             buttons[i].setPreferredSize(new Dimension(90, 60));
             buttons[i].setFont(fontHeading);
+            buttons[i].setName(i+"");
+            buttons[i].addActionListener(this);
         }
 
         // Initialize status
@@ -66,5 +76,78 @@ public class Game extends JFrame {
         this.add(heading, BorderLayout.NORTH);
         this.add(status, BorderLayout.SOUTH);
         this.add(buttonContainer);
+    }
+
+
+    private void startGame() {
+        // Ensure status is initialized before using it
+        if (status != null) {
+            status.setText("Player 0 Chance");
+        } else {
+            System.err.println("Error: Status JLabel is not initialized.");
+        }
+    }
+// Button click
+    @Override
+    public void actionPerformed(ActionEvent e) {
+JButton sourceButton=(JButton)e.getSource();
+int currentPosition=Integer.parseInt(sourceButton.getName());
+
+// check for position
+        if(gameState[currentPosition]==-1){
+// current position is vacant
+            JButton currentButton=buttons[currentPosition];
+            setCurrentPositionVale(currentPosition);
+           int winner=checkForWinner();
+            boolean result=checkForDraw();
+             if (result)
+            JOptionPane.showMessageDialog(this,"Match Draw");
+        }else{
+            JOptionPane.showMessageDialog(this,"Current Position is not empty");
+
+
+        }
+
+    }
+
+    private int checkForWinner() {
+        int winner =0;
+        for (int[] winnerArray :winingConditions){
+
+                                      if(gameState[winnerArray[0]]==gameState[winnerArray[1]] && gameState[winnerArray[1]]==gameState[winnerArray[2]]){
+
+                                      }
+        }
+        return 0;
+    }
+
+    // match draw wala logic 
+    private boolean checkForDraw() {
+        boolean isAnyFieldLeft=false;
+        for (int state:gameState){
+            if (state==-1) {
+                isAnyFieldLeft=true;
+                break;
+            }
+        }
+        if (!isAnyFieldLeft && !isWinner){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void setCurrentPositionVale(int currentPosition) {
+        JButton currentButton=buttons[currentPosition];
+        if (currentPlayer==0){
+            currentButton.setText("0");
+            gameState[currentPosition]=0;
+            currentPlayer=1;
+        }else {
+            currentButton.setText("1");
+            gameState[currentPosition]=1;
+            currentPlayer=0;
+        }
+        System.out.println(Arrays.toString(gameState));
     }
 }
