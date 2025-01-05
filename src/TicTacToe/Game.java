@@ -14,19 +14,20 @@ public class Game extends JFrame implements ActionListener {
     private Font fontHeading = new Font("", Font.BOLD, 20);
 
     // for game logic
-    boolean isWinner=false;
-    int currentPlayer=0;
-    int[] gameState ={-1,-1,-1,-1,-1,-1,-1,-1,-1};
-    int[][] winingConditions ={
-            {0,1,2},
-            {3,4,5},
-            {6,7,8},
-            {0,3,6},
-            {1,4,7},
-            {2,5,8},
-            {0,4,8},
-            {2,4,6}
+    boolean isWinner = false;
+    int currentPlayer = 0;
+    int[] gameState = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+    int[][] winingConditions = {
+            {0, 1, 2},
+            {3, 4, 5},
+            {6, 7, 8},
+            {0, 3, 6},
+            {1, 4, 7},
+            {2, 5, 8},
+            {0, 4, 8},
+            {2, 4, 6}
     };
+
     // Constructor
     Game(String title) {
         setTitle(title);
@@ -55,7 +56,7 @@ public class Game extends JFrame implements ActionListener {
             buttons[i] = new JButton();
             buttons[i].setPreferredSize(new Dimension(90, 60));
             buttons[i].setFont(fontHeading);
-            buttons[i].setName(i+"");
+            buttons[i].setName(i + "");
             buttons[i].addActionListener(this);
         }
 
@@ -68,8 +69,8 @@ public class Game extends JFrame implements ActionListener {
         buttonContainer = new JPanel();
         buttonContainer.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
         buttonContainer.setLayout(new GridLayout(3, 3));
-        for (int i = 0; i < buttons.length; i++) {
-            buttonContainer.add(buttons[i]);
+        for (JButton button : buttons) {
+            buttonContainer.add(button);
         }
 
         // Add components to the frame
@@ -86,24 +87,49 @@ public class Game extends JFrame implements ActionListener {
         } else {
             System.err.println("Error: Status JLabel is not initialized.");
         }
+        Arrays.fill(gameState, -1);
+        for (JButton button : buttons) {
+            button.setText("");
+        }
+        currentPlayer = 0;
+        isWinner = false;
     }
-// Button click
+
+    // Button click
     @Override
     public void actionPerformed(ActionEvent e) {
-JButton sourceButton=(JButton)e.getSource();
-int currentPosition=Integer.parseInt(sourceButton.getName());
+        JButton sourceButton = (JButton) e.getSource();
+        int currentPosition = Integer.parseInt(sourceButton.getName());
 
 // check for position
-        if(gameState[currentPosition]==-1){
+        if (gameState[currentPosition] == -1) {
 // current position is vacant
-            JButton currentButton=buttons[currentPosition];
+            JButton currentButton = buttons[currentPosition];
             setCurrentPositionVale(currentPosition);
-           int winner=checkForWinner();
-            boolean result=checkForDraw();
-             if (result)
-            JOptionPane.showMessageDialog(this,"Match Draw");
-        }else{
-            JOptionPane.showMessageDialog(this,"Current Position is not empty");
+            int winner = checkForWinner();
+            if (winner >= 0) {
+                JOptionPane.showMessageDialog(this, winner + " has won the game");
+                int x = JOptionPane.showConfirmDialog(this, "Restart the game");
+                System.out.println(x);
+                if (x == 0) {
+                    startGame();
+                }
+
+            }
+
+            boolean result = checkForDraw();
+            if (result) {
+                JOptionPane.showMessageDialog(this, "Match Draw");
+                int x = JOptionPane.showConfirmDialog(this, "Restart the game");
+                System.out.println(x);
+                if (x == 0) {
+                    startGame();
+                }
+            }
+
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Current Position is not empty");
 
 
         }
@@ -111,43 +137,49 @@ int currentPosition=Integer.parseInt(sourceButton.getName());
     }
 
     private int checkForWinner() {
-        int winner =0;
-        for (int[] winnerArray :winingConditions){
+        int winner = -1;
+        for (int[] winnerArray : winingConditions) {
 
-                                      if(gameState[winnerArray[0]]==gameState[winnerArray[1]] && gameState[winnerArray[1]]==gameState[winnerArray[2]]){
+            if ((gameState[winnerArray[0]] == gameState[winnerArray[1]] && gameState[winnerArray[1]] == gameState[winnerArray[2]]) && gameState[winnerArray[0]] != -1) {
 
-                                      }
+                isWinner = true;
+                winner = gameState[winnerArray[0]];
+                break;
+            }
+
         }
-        return 0;
+        return winner;
     }
 
     // match draw wala logic 
     private boolean checkForDraw() {
-        boolean isAnyFieldLeft=false;
-        for (int state:gameState){
-            if (state==-1) {
-                isAnyFieldLeft=true;
-                break;
+        boolean isAnyFieldLeft = false;
+        for (int state : gameState) {
+            if (state == -1) {
+                isAnyFieldLeft = true;
             }
         }
-        if (!isAnyFieldLeft && !isWinner){
+        if (!isAnyFieldLeft && !isWinner) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
     private void setCurrentPositionVale(int currentPosition) {
-        JButton currentButton=buttons[currentPosition];
-        if (currentPlayer==0){
+        JButton currentButton = buttons[currentPosition];
+        if (currentPlayer == 0) {
             currentButton.setText("0");
-            gameState[currentPosition]=0;
-            currentPlayer=1;
-        }else {
+            gameState[currentPosition] = 0;
+            status.setText("Player 1 chance");
+            currentPlayer = 1;
+        } else {
             currentButton.setText("1");
-            gameState[currentPosition]=1;
-            currentPlayer=0;
+            gameState[currentPosition] = 1;
+            status.setText("Player 0 chance");
+            currentPlayer = 0;
         }
         System.out.println(Arrays.toString(gameState));
+
     }
 }
