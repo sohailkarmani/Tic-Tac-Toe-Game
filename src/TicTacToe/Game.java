@@ -170,11 +170,13 @@ public class Game extends JFrame implements ActionListener {
         JButton currentButton = buttons[currentPosition];
         if (currentPlayer == 0) {
             currentButton.setText("0");
+            //currentButton.setIcon(new ImageIcon("src/TicTacToe/0.png"));
             gameState[currentPosition] = 0;
             status.setText("Player 1 chance");
             currentPlayer = 1;
         } else {
             currentButton.setText("1");
+            //currentButton.setIcon(new ImageIcon("src/TicTacToe/one.png"));
             gameState[currentPosition] = 1;
             status.setText("Player 0 chance");
             currentPlayer = 0;
